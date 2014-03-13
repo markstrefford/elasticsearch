@@ -1,0 +1,9 @@
+client/bower_components/*
+node_modules/*
+.idea/*
+hotel_json/*
+*.tar
+*.json
+
+
+*.log
