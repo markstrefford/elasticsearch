@@ -2,7 +2,6 @@
 
 angular.module('esSearchApp', [
         'ngRoute',
-        'elasticsearch',
         'search'
     ]).config(function ($routeProvider) {
         $routeProvider
