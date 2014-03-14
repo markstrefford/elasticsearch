@@ -24,7 +24,7 @@ angular.module('search', ['leaflet-directive', 'esService'])
         // TODO - Make this dynamic!!
 
         var searchReq = {   "fields": [ "id", "name", "geo", "description", "starrating", "custrating"],
-            "from" : 0, "size" : 1000,
+            "from" : 0, "size" : 50,
             "query": {
                 "matchAll": {}
             },
@@ -38,15 +38,7 @@ angular.module('search', ['leaflet-directive', 'esService'])
             ]
         };
 
-        /*
-         var searchReq= { "fields": [ "id", "name", "geo", "description"],
-         "query": {
-         "match_all": {}
-         }
-         }
-         */
-
-        // Use promises here based on http://brianoneill.blogspot.co.uk/2014/01/elasticsearch-from-angularjs-fun-w.html
+        // Use promises here based on http:...
         es.search({
             host: 'localhost:9200/hotels/hotel',
             body: searchReq
@@ -55,7 +47,7 @@ angular.module('search', ['leaflet-directive', 'esService'])
                 // Iterate through results and update $scope
                 for (var i in body.hits.hits) {
                     var hotel = body.hits.hits[i];
-                    console.log("Processing " + JSON.stringify(hotel));
+                    //console.log("Processing " + JSON.stringify(hotel));
                     m[hotel._id] = {
                         "lat": hotel.fields.geo.split(",")[0],
                         "lng": hotel.fields.geo.split(",")[1],
@@ -67,15 +59,20 @@ angular.module('search', ['leaflet-directive', 'esService'])
                         "description": hotel.fields.description,
                         "starrating" : hotel.fields.starrating,
                         "custrating" : hotel.fields.custrating
+
                     }
                 }
                 //console.log(JSON.stringify($scope.markers));
-                console.log(JSON.stringify(m));
+                //console.log(JSON.stringify(m));
                 $scope.markers = m;
                 $scope.hotels = h;
             }, function (error) {
                 console.trace(error.message);
             });
+
+        $scope.newSearch = function (query) {
+            console.log($scope.search.query);
+        }
     }])
 ;
 
