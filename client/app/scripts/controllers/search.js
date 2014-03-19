@@ -79,7 +79,8 @@ angular.module('searchModule', ['leaflet-directive', 'esService'])
 
         // Called from search.html "Search" button
         $scope.refineSearch = function (request) {
-            scope.results = newSearch(request);
+            console.log("New search : " + request);
+            newSearch(request);
         }
 
     }])
