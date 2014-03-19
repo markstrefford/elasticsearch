@@ -73,7 +73,7 @@ angular.module('searchModule', ['leaflet-directive', 'esService'])
                     }
                     $scope.hotels=h;
                     $scope.markers=m;
-                    $scope.apply;
+                    //$scope.apply;
                 }, function (error) {
                     console.trace(error.message);
                 });
