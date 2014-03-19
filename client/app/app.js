@@ -2,7 +2,7 @@
 
 angular.module('esSearchApp', [
         'ngRoute',
-        'search'
+        'searchModule'
     ]).config(function ($routeProvider) {
         $routeProvider
             .when('/', {

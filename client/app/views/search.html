@@ -2,8 +2,8 @@
     <div class="row span12">
         <div ng-controller="SearchCtrl">
             <form name="search">
-                Search Query: <input type="text" name="searchQuery" ng-model="search.query">
-                <button class="btn btn-primary" ng-click="newSearch(search.query)">Search</button>
+                Search Query: <textarea name="searchQuery" ng-model="search.query" cols="100" rows="4" ></textarea>
+                <button class="btn btn-primary" ng-click="refineSearch(search.query)">Search</button>
             </form>
         </div>
     </div>
