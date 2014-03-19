@@ -1,14 +1,14 @@
-<div class="container">
+<div class="container" ng-controller="SearchCtrl">
     <div class="row span12">
-        <div ng-controller="SearchCtrl">
-            <form name="search">
+        <div >
+            <form name="searchForm" ng-model="search">
                 Search Query: <textarea name="searchQuery" ng-model="search.query" cols="100" rows="4" ></textarea>
                 <button class="btn btn-primary" ng-click="refineSearch(search.query)">Search</button>
             </form>
         </div>
     </div>
     <div class="row">
-        <div class="span12" ng-model="search">
+        <div class="span12" >
             <leaflet
                      testing="testing"
                      center="center"
