@@ -11,25 +11,10 @@ angular.module('searchModule', ['leaflet-directive', 'esService'])
                 }});
         angular.extend($scope, {markers: {}});
         angular.extend($scope, {hotels: {}});
-
-        // Now do the default search
-        // TODO - Make this dynamic!!
-        //search.request = {   "fields": [ "id", "name", "geo", "description", "starrating", "custrating"],
-        //    "from": 0, "size": 5,
-        //    "query": {
-        //        "matchAll": {}
-        //    },
-        //    "sort": [
-        //        {
-        //            "_geo_distance": {
-        //                "geo": "-2.9897, 53.39879",
-        //                "unit": "km"
-        //            }
-        //        }
-        //    ]
-        //};
+        $scope.stats = {esFrom: 0, esSize: 25};
 
         search.request = { "fields": [ "id", "name", "geo", "description", "starrating", "custrating"],
+            "from" : $scope.stats.esFrom, "size" : $scope.stats.esSize,
             "query": {
                 "term": {
                     "description": "spa"
@@ -54,6 +39,7 @@ angular.module('searchModule', ['leaflet-directive', 'esService'])
                 body: searchReq
             }).then(function (body) {
                     // Iterate through results and update $scope
+                    $scope.stats.numResults = body.hits.total;
                     var searchRes = body.hits.hits;
                     for (var i in searchRes) {
                         var hotel = searchRes[i];
