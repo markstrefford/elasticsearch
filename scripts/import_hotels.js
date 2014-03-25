@@ -30,8 +30,8 @@ var hotelsJson = JSON.parse(fs.readFileSync(hotelsFile));
 // Remove UTF encoding that somehow got into 700+ files!!
 var cleanJson = JSON.parse(JSON.stringify(hotelsJson).replace(/\uFEFF/, ''));
 console.log(cleanJson);
-var hotelId = cleanJson.ID;
-if ( cleanJson.custrating="NULL" ) cleanJson.custrating=0;
+var hotelId = cleanJson.id;
+if ( cleanJson.cust_rating="NULL" ) cleanJson.cust_rating=0;
 console.log("Posting to " + esURL + hotelId);
 request.post(esURL + hotelId, {"body" : JSON.stringify(cleanJson)}, function(error, response, body) {
     if (!error && response.statusCode == 200) {
