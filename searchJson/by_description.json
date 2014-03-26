@@ -1,0 +1,6 @@
+{ "fields": [ "id", "name", "geo", "description", "starrating", "custrating"],
+    "query": {
+        "term": {
+            "description": "spa"
+        }
+    }}

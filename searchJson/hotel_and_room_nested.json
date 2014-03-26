@@ -1,0 +1,28 @@
+{
+    "query": {
+        "bool": {
+            "must": [
+                {
+                    "fuzzy": {
+                        "nested_hotel.room.name": {
+                            "value": "standard"
+                        }
+                    }
+                },
+                {
+                    "fuzzy": {
+                        "nested_hotel.description": {
+                            "value": "spa"
+                        }
+                    }
+                }
+            ],
+            "must_not": [ ],
+            "should": [ ]
+        }
+    },
+    "from": 0,
+    "size": 250,
+    "sort": [ ],
+    "facets": { }
+}

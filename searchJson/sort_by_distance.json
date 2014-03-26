@@ -1,0 +1,14 @@
+{   "fields": [ "id", "name", "geo", "description", "starrating", "custrating"],
+    "from" : 0, "size" : 25,
+    "query": {
+    "matchAll": {}
+},
+    "sort": [
+        {
+            "_geo_distance": {
+                "geo": "-2.9897, 53.39879",
+                "unit": "km"
+            }
+        }
+    ]
+}

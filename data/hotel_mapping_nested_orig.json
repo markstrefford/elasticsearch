@@ -1,0 +1,56 @@
+{ "hotel": {
+    "properties": {
+        "id": {
+            "type": "long",
+            "store": "yes"
+        },
+        "name": {
+            "type": "string",
+            "store": "yes"
+        },
+        "address": {
+            "type": "string",
+            "store": "yes"
+        },
+        "city": {
+            "type": "string",
+            "store": "yes"
+        },
+        "postcode": {
+            "type": "string",
+            "store": "yes"
+        },
+        "geo": {
+            "type": "geo_point",
+            "store": "yes"
+        },
+        "website": {
+            "type": "string",
+            "store": "yes"
+        },
+        "description": {
+            "type": "string",
+            "store": "yes"
+        },
+        "star_rating": {
+            "type": "string",
+            "store": "yes"
+        },
+        "cust_rating": {
+            "type": "float",
+            "store": "yes"
+        },
+        "algorithm_score": {
+            "type": "integer",
+            "store": "yes"
+        },
+        "algorithm_nested": {
+            "type": "nested"
+        },
+        "room": {
+            "type": "nested"
+
+        }
+    }
+}}
+

@@ -1,0 +1,6 @@
+{ "fields": [ "id", "name", "geo"],
+    "query": {
+        "match_all": {}
+    }
+
+}

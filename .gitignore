@@ -3,7 +3,10 @@ node_modules/*
 .idea/*
 hotel_json/*
 *.tar
-*.json
+#*.json
 
+rooms_json/*
+rooms_json_2/*
+hotel_json/*
 
 *.log

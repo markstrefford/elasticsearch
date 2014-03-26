@@ -1,0 +1,13 @@
+{ "fields": [ "id", "name", "geo", "description", "starrating", "custrating"],
+    "from" : 0, "size" : 25,
+    "query": {
+        "fuzzy_like_this": {
+            "fields": [ "name", "description"],
+            "like_text": "waterfront",
+            "max_query_terms": 25
+        }
+    }
+}
+
+
+

@@ -1,0 +1,43 @@
+{"room": {
+    "_parent": {
+        "type": "hotel"
+    },
+    "properties": {
+        "ID": {
+            "type": "long",
+            "store": "yes"
+        },
+        "HotelID": {
+            "type": "long",
+            "store": "yes"
+        },
+        "name": {
+            "type": "string",
+            "store": "yes"
+        },
+        "Beds": {
+            "type": "byte",
+            "store": "yes"
+        },
+        "RackRate": {
+            "type": "float",
+            "store": "yes"
+        },
+        "Breakfast": {
+            "type": "boolean",
+            "store": "yes"
+        },
+        "Dinner": {
+            "type": "boolean",
+            "store": "yes"
+        },
+        "Adults": {
+            "type": "byte",
+            "store": "yes"
+        },
+        "Children": {
+            "type": "byte",
+            "store": "yes"
+        }
+    }
+}}

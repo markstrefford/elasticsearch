@@ -1,0 +1,16 @@
+{ "fields": [ "id", "name", "geo", "description"],
+    "query": {
+        "filtered": {
+            "query": {
+                "match_all": {}
+            },
+            "filter": {
+                "geo_distance": {
+                    "distance": "2km",
+                    "geo": [-2.9897, 53.39879]
+                }
+            }
+        }
+    }
+}
+
