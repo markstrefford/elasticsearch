@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 if (process.argv.length != 4) {
     die('import hotel json into elastic search\n' +
-        'usage: import_hotels <file_or_directory_to_import> <elasticsearch_url>');
+        'usage: import_hotels <directory_to_import_from> <elasticsearch_url>');
 }
 
 /**
@@ -15,30 +15,48 @@ var fs = require('fs'),
     request = require('request');
 
 
-var hotelsFile = process.argv[2],
+var hotelsDir = process.argv[2],
     esURL = process.argv[3];
 
 /*
  * Import hotels from JSON
  */
 
+var hotelData = {};
 
-// main bit of stuff!
+var postToElasticSearch = function(json) {
+    request.post(esURL + json.id, {"body": JSON.stringify(json)}, function (error, response, body) {
+        if (error) {
+            die(body);
+        } else {
+            console.log(body);
+        }
+    });
+}
 
-console.log("Retrieving hotels " + hotelsFile);
-var hotelsJson = JSON.parse(fs.readFileSync(hotelsFile));
-// Remove UTF encoding that somehow got into 700+ files!!
-var cleanJson = JSON.parse(JSON.stringify(hotelsJson).replace(/\uFEFF/, ''));
-console.log(cleanJson);
-var hotelId = cleanJson.id;
-if ( cleanJson.cust_rating="NULL" ) cleanJson.cust_rating=0;
-console.log("Posting to " + esURL + hotelId);
-request.post(esURL + hotelId, {"body" : JSON.stringify(cleanJson)}, function(error, response, body) {
-    if (!error && response.statusCode == 200) {
-        console.log(body)
-    } else {
-        die(body);
-    }
+fs.readdir(hotelsDir, function (err, files) {
+    if (err) throw err;
+    var c = 0;
+    files.forEach(function (file) {
+        c++;
+        fs.readFile(hotelsDir + file, 'utf-8', function (err, json) {
+            if (err) throw err;
+            //console.log(json);
+            var hotelJson = JSON.parse(json);
+            if (hotelJson.cust_rating = "NULL") hotelJson.cust_rating = 0;
+            hotelJson.geo = [ parseFloat(hotelJson.lng), parseFloat(hotelJson.lat)];
+            hotelJson.room = [];
+            hotelJson.algorithm_score = 0;
+            hotelJson.algorithm_nested = [];
+            hotelData[hotelJson.id] = hotelJson;
+            //console.log("Indexing " + JSON.stringify(hotelJson));
+            postToElasticSearch(hotelJson);
+            if (0 === --c) {
+                console.log(hotelData);  //socket.emit('init', {data: data});
+                console.log("Done!!");
+            }
+        });
+    });
 });
 
 

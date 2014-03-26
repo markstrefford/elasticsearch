@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 if (process.argv.length != 4) {
     die('import room json into elastic search\n' +
-        'usage: import_rooms <file_or_directory_to_import> <elasticsearch_url>');
+        'usage: import_rooms_nested <file_or_directory_to_import> <elasticsearch_url>');
 }
 
 /**
@@ -15,49 +15,62 @@ var fs = require('fs'),
     request = require('request');
 
 
-var roomsFile = process.argv[2],
+var roomDir = process.argv[2],
     esURL = process.argv[3];
 
 /*
  * Import rooms from JSON and insert into hotels
  */
 
+var roomData = {};
 
-// main bit of stuff!
-// from http://www.elasticsearch.org/guide/en/elasticsearch/reference/current/docs-update.html
-
-console.log("Retrieving room " + roomsFile);
-var roomsJson = JSON.parse(fs.readFileSync(roomsFile));
-// Remove UTF encoding that somehow got into 700+ files!!
-var cleanJson = JSON.parse(JSON.stringify(roomsJson).replace(/\uFEFF/, ''));
-console.log(cleanJson);
-
-// Create structure in the way I want it for the index
-var roomJson = {
-    "id" : cleanJson.id,
-    "name" : cleanJson.name,
-
-}
-var roomId = cleanJson.ID;
-var hotelID = cleanJson.HotelID;
-if ( cleanJson.RackRate="NULL" ) cleanJson.RackRate=0;
-console.log(JSON.stringify(cleanJson));
-
-var updateJson = {"script": "ctx._source.room += room",
-    "params": {
-        "room": cleanJson
+var postToElasticSearch = function (json) {
+    var esPostUrl = esURL + "/" + json.hotelid + "/_update";
+    var nestedJson = {"script": "ctx._source.room += room",
+        "params": {
+            "room": json
+        }
     }
+    request.post(esPostUrl, {"body": JSON.stringify(nestedJson)}, function (error, response, body) {
+        if (!error && response.statusCode == 200) {
+            console.log(body)
+        } else {
+            if (body.indexOf("version conflict")) {
+                console.log("Version conflict... retrying " + json.hotelid);
+                postToElasticSearch(json);
+            } else {
+                die(body);
+            }
+        }
+    });
 }
-console.log(JSON.stringify(updateJson));
-// Add parent to URL
-esParentUrl = esURL + "/" + hotelID + "/_update";
-console.log("Posting to " + esParentUrl);
-request.post(esParentUrl, {"body": JSON.stringify(updateJson)}, function (error, response, body) {
-    if (!error && response.statusCode == 200) {
-        console.log(body)
-    } else {
-        die(body);
-    }
+
+fs.readdir(roomDir, function (err, files) {
+    if (err) throw err;
+    var c = 0;
+    files.forEach(function (file) {
+        c++;
+        fs.readFile(roomDir + file, 'utf-8', function (err, json) {
+            if (err) throw err;
+            var roomJson = JSON.parse(json);
+
+            // Some "cleansing"!!
+            if (roomJson.breakfast = 0) roomJson.breakfast = "FALSE";
+            if (roomJson.breakfast = 1) roomJson.breakfast = "TRUE";
+            if (roomJson.dinner = 0) roomJson.dinner = "FALSE";
+            if (roomJson.dinner = 1) roomJson.dinner = "TRUE";
+            if (roomJson.rack_rate = "NULL") roomJson.rack_rate = "2000";
+
+            roomData[roomJson.id] = roomJson;
+
+            //console.log("Indexing " + JSON.stringify(hotelJson));
+            postToElasticSearch(roomJson);
+            if (0 === --c) {
+                console.log(roomData);  //socket.emit('init', {data: data});
+                console.log("Done!!");
+            }
+        });
+    });
 });
 
 
@@ -66,3 +79,4 @@ function die(message) {
     console.error(message);
     process.exit(1);
 }
+
