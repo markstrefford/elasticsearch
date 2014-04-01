@@ -13,7 +13,7 @@ angular.module('searchModule', ['leaflet-directive', 'esService'])
         angular.extend($scope, {hotels: {}});
         $scope.stats = {esFrom: 0, esSize: 25};
 
-        search.request = { "fields": [ "id", "name", "geo", "description", "starrating", "custrating"],
+        search.request = { "fields": [ "id", "name", "geo", "description", "star_rating", "cust_rating"],
             "from" : $scope.stats.esFrom, "size" : $scope.stats.esSize,
             "query": {
                 "term": {
@@ -23,10 +23,42 @@ angular.module('searchModule', ['leaflet-directive', 'esService'])
 
 
         // Called from search.html "Search" button
-        $scope.refineSearch = function (request) {
-            newSearch(request);
-
-            //$scope.$apply();
+        $scope.refineSearch = function (query, adults, children) {
+            //console.log(query, adults, children);
+            newSearch({ "fields": [ "id", "name", "geo", "description", "star_rating", "cust_rating"],
+                "from" : $scope.stats.esFrom, "size" : $scope.stats.esSize,
+                "query": {
+                    "bool": {
+                        "must": [
+                            {
+                                "term": {
+                                    "nested_hotel.room.adults": {
+                                        "value": adults
+                                    }
+                                }
+                            },
+                            {
+                                "term": {
+                                    "nested_hotel.room.children": {
+                                        "value": children
+                                    }
+                                }
+                            },
+                            {
+                                "fuzzy": {
+                                    "nested_hotel.description": {
+                                        "value": query
+                                    }
+                                }
+                            }
+                        ],
+                        "must_not": [ ],
+                        "should": [ ]
+                    }
+                },
+                "sort": [ ],
+                "facets": { }
+            });
         }
 
         var newSearch = function (searchReq) {
@@ -35,25 +67,35 @@ angular.module('searchModule', ['leaflet-directive', 'esService'])
                 h = {};
             // Use promises here based on http:...
             es.search({
-                host: 'localhost:9200/hotels/hotel',
+                //host: 'localhost:9200/hotels/nested_hotel/',
+                host: 'localhost:9200',
+                index: 'hotels',
+                type: 'nested_hotel',
                 body: searchReq
             }).then(function (body) {
                     // Iterate through results and update $scope
                     $scope.stats.numResults = body.hits.total;
                     var searchRes = body.hits.hits;
+                    //console.log(JSON.stringify(searchRes));
                     for (var i in searchRes) {
                         var hotel = searchRes[i];
-                        m[hotel._id] = {
-                            "lat": hotel.fields.geo.split(",")[0],
-                            "lng": hotel.fields.geo.split(",")[1],
-                            "message": hotel.fields.name,
+                        m[hotel._id[0]] = {
+                        //m[hotel._id] = {
+                            //"lat": hotel.fields.geo.split(",")[0],
+                            //"lng": hotel.fields.geo.split(",")[1],
+                            "lat": hotel.fields.geo[1],
+                            "lng": hotel.fields.geo[0],
+                            "message": hotel.fields.name[0],
+                            //"message": hotel.fields.name,
                             "draggable": false
                         };
                         h[hotel._id] = {
-                            "name": hotel.fields.name,
-                            "description": hotel.fields.description,
-                            "starrating": hotel.fields.starrating,
-                            "custrating": hotel.fields.custrating
+                            "name": hotel.fields.name[0],
+                            "description": hotel.fields.description[0],
+                            //"name": hotel.fields.name,
+                            //"description": hotel.fields.description,
+                            "starrating": hotel.fields.star_rating[0],
+                            "custrating": hotel.fields.cust_rating[0]
 
                         }
                     }

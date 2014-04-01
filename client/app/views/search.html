@@ -1,21 +1,45 @@
 <div class="container" ng-controller="SearchCtrl">
+
+    <div class="row">
+        <div class="span12">
+            <leaflet
+                    testing="testing"
+                    center="center"
+                    markers="markers"
+                    width="960px" height="700px" border="10px">
+            </leaflet>
+        </div>
+    </div>
     <div class="row span12">
-        <div >
-            <form name="searchForm" ng-model="search">
-                Search Query: <textarea name="searchQuery" ng-model="search.query" cols="100" rows="4" ></textarea>
-                <button class="btn btn-primary" ng-click="refineSearch(search.query)">Search</button>
+        <!-- <div >   -->
+        <!--     <form name="searchForm" ng-model="search">  -->
+        <!--         Search Query: <textarea name="searchQuery" ng-model="search.query" cols="100" rows="4" ></textarea>   -->
+        <!--         <button class="btn btn-primary" ng-click="refineSearch(search.query)">Search</button>    -->
+        <!--     </form>   -->
+        <!-- </div>   -->
+        <div>
+
+        <div> <br/>
+            <form class="form-inline" role="form" name="searchForm" ng-model="search">
+                <input name="searchQuery" ng-model="search.query" maxlength="200" class="input-xxlarge"
+                       placeholder="What are you searching for?"/>
+                Adults: <select class="form-control input-mini" name="searchAdults" ng-model="search.adults">
+                <option selected="selected" value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+            </select>
+                Children:<select class="form-control input-mini" name="searchChildren" ng-model="search.children">
+                <option selected="selected" value="0">0</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+            </select>
+                <button class="btn btn-primary" ng-click="refineSearch(search.query, search.adults, search.children)">
+                    Search
+                </button>
             </form>
         </div>
     </div>
-    <div class="row">
-        <div class="span12" >
-            <leaflet
-                     testing="testing"
-                     center="center"
-                     markers="markers"
-                     width="960px" height="700px" border="10px">
-            </leaflet>
-        </div>
     </div>
     <div class="row">
         <div class="span12">
