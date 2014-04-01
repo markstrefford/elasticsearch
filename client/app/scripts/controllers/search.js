@@ -13,15 +13,6 @@ angular.module('searchModule', ['leaflet-directive', 'esService'])
         angular.extend($scope, {hotels: {}});
         $scope.stats = {esFrom: 0, esSize: 25};
 
-        search.request = { "fields": [ "id", "name", "geo", "description", "star_rating", "cust_rating"],
-            "from" : $scope.stats.esFrom, "size" : $scope.stats.esSize,
-            "query": {
-                "term": {
-                    "description": "spa"
-                }
-            }}
-
-
         // Called from search.html "Search" button
         $scope.refineSearch = function (query, adults, children) {
             //console.log(query, adults, children);
@@ -61,13 +52,12 @@ angular.module('searchModule', ['leaflet-directive', 'esService'])
             });
         }
 
+        // Call es with a search query
         var newSearch = function (searchReq) {
             console.log("search(): " + JSON.stringify(searchReq));
             var m = {},
                 h = {};
-            // Use promises here based on http:...
             es.search({
-                //host: 'localhost:9200/hotels/nested_hotel/',
                 host: 'localhost:9200',
                 index: 'hotels',
                 type: 'nested_hotel',
@@ -76,24 +66,18 @@ angular.module('searchModule', ['leaflet-directive', 'esService'])
                     // Iterate through results and update $scope
                     $scope.stats.numResults = body.hits.total;
                     var searchRes = body.hits.hits;
-                    //console.log(JSON.stringify(searchRes));
+
                     for (var i in searchRes) {
                         var hotel = searchRes[i];
-                        m[hotel._id[0]] = {
-                        //m[hotel._id] = {
-                            //"lat": hotel.fields.geo.split(",")[0],
-                            //"lng": hotel.fields.geo.split(",")[1],
+                        m[hotel._id] = {
                             "lat": hotel.fields.geo[1],
                             "lng": hotel.fields.geo[0],
                             "message": hotel.fields.name[0],
-                            //"message": hotel.fields.name,
                             "draggable": false
                         };
                         h[hotel._id] = {
                             "name": hotel.fields.name[0],
                             "description": hotel.fields.description[0],
-                            //"name": hotel.fields.name,
-                            //"description": hotel.fields.description,
                             "starrating": hotel.fields.star_rating[0],
                             "custrating": hotel.fields.cust_rating[0]
 
@@ -101,12 +85,21 @@ angular.module('searchModule', ['leaflet-directive', 'esService'])
                     }
                     $scope.hotels=h;
                     $scope.markers=m;
+                    console.log(JSON.stringify(m));
                     //$scope.apply;
                 }, function (error) {
                     console.trace(error.message);
                 });
-            //return {markers: m, hotels: h};
         }
+
+        // Set up a default query
+        search.request = { "fields": [ "id", "name", "geo", "description", "star_rating", "cust_rating"],
+            "from" : $scope.stats.esFrom, "size" : $scope.stats.esSize,
+            "query": {
+                "term": {
+                    "description": "spa"
+                }
+            }}
 
         // Now render the map with the default search
         newSearch(search.request);
