@@ -31,16 +31,16 @@ angular.module('searchModule', ['leaflet-directive', 'esService'])
                     "bool": {
                         "must": [
                             {
-                                "term": {
+                                "range": {
                                     "nested_hotel.room.adults": {
-                                        "value": adults
+                                        "gte": adults
                                     }
                                 }
                             },
                             {
-                                "term": {
+                                "range": {
                                     "nested_hotel.room.children": {
-                                        "value": children
+                                        "gte": children
                                     }
                                 }
                             },
